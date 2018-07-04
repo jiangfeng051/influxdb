@@ -115,6 +115,15 @@ func (s *SeriesIDSet) Equals(other *SeriesIDSet) bool {
 	return s.bitmap.Equals(other.bitmap)
 }
 
+// And returns a new SeriesIDSet containing elements that were present in s and other.
+func (s *SeriesIDSet) And(other *SeriesIDSet) *SeriesIDSet {
+	s.RLock()
+	defer s.RUnlock()
+	other.RLock()
+	defer other.RUnlock()
+	return &SeriesIDSet{bitmap: roaring.And(s.bitmap, other.bitmap)}
+}
+
 // AndNot returns a new SeriesIDSet containing elements that were present in s,
 // but not present in other.
 func (s *SeriesIDSet) AndNot(other *SeriesIDSet) *SeriesIDSet {
@@ -124,6 +133,15 @@ func (s *SeriesIDSet) AndNot(other *SeriesIDSet) *SeriesIDSet {
 	defer other.RUnlock()
 
 	return &SeriesIDSet{bitmap: roaring.AndNot(s.bitmap, other.bitmap)}
+}
+
+// Or returns a new SeriesIDSet containing elements that were present in s or other.
+func (s *SeriesIDSet) Or(other *SeriesIDSet) *SeriesIDSet {
+	s.RLock()
+	defer s.RUnlock()
+	other.RLock()
+	defer other.RUnlock()
+	return &SeriesIDSet{bitmap: roaring.Or(s.bitmap, other.bitmap)}
 }
 
 // ForEach calls f for each id in the set.
